@@ -1,7 +1,7 @@
 
 function mudaMes(mes){
-	var mes1 = "<option value='false' selected> </option> ";								// Define o mês de 28 dias
-	for (var i=1; i<29; i++) mes1 += "<option value=" +i+ ">" +i+ "</option> ";				
+	var mes1 = "<option value='1' selected='selected'> 1 </option> ";								// Define o mês de 28 dias
+	for (var i=2; i<29; i++) mes1 += "<option value=" +i+ ">" +i+ "</option> ";				
 	
 	var mes2 = mes1 + "<option value=29>29</option> <option value=30>30</option> ";				// Define o mês de 30 dias
 	var mes3 = mes2 + "<option value=31>31</option> ";											// Define o mês de 31 dias
@@ -19,6 +19,24 @@ function mudaMes(mes){
 	}
 
 	return false;
+}
+
+function qualMes(mes){
+	mes = parseInt(mes);
+	switch(mes){
+		case  1: return "Janeiro";	break;
+		case  2: return "Fevereiro";break;
+		case  3: return "Março";	break;
+		case  4: return "Abril";	break;
+		case  5: return "Maio";		break;
+		case  6: return "Junho";	break;
+		case  7: return "Julho";	break;
+		case  8: return "Agosto";	break;
+		case  9: return "Setembro";	break;
+		case 10: return "Outubro";	break;
+		case 11: return "Novembro";	break;
+		case 12: return "Dezembro";	break;
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -128,7 +146,27 @@ function bgColor(alpha){
 	document.body.style.background = color; 
 }
 
-function desenhaSol(L,cnv,phi,alpha){
+function horColor(){
+	var colors = [];
+	var color0;
+	var color1;
+	if(alpha){
+		if(alpha > 5){ color0 = "rgb(26,150,15)"; color1 = "rgb(11,120,6)"; }
+		else{
+			if(alpha > -15){
+				color0 = "rgb(" + (6 + parseInt(1 * (alpha + 15))) + "," + (48 + parseInt(5.1 * (alpha + 15))) + "," + (2 + parseInt(0.65 * (alpha + 15))) + ")";
+				color1 = "rgb(" + parseInt(0.55 * (alpha + 15)) + "," + parseInt(6 * (alpha + 15)) + "," + parseInt(0.3 * (alpha + 15)) + ")";
+			}
+			else{ color0 = "rgb(6,48,2)"; color1 = "rgb(0,0,0)"; }
+		}
+	}
+	else{ color0 = "rgb(6,48,2)"; color1 = "rgb(0,0,0)"; }
+
+	colors[0] = color0; colors[1] = color1;
+	return colors;
+}
+
+function coordSol(L,cnv,phi,alpha){
 	var coords = [];
 	phiRad = toRad(phi);
 	alphaRad = toRad(alpha);

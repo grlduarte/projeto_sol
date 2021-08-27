@@ -9,10 +9,14 @@ var horaDia;													// Hora do dia
 var horaDeg;													// Ângulo horário
 var theta;														// Elevação do sol até o Zênite // theta + alpha = 90º
 var alpha;														// Elevação do horizonte até o Sol
-var started = false;											// Variável para verificar se os dados foram inseridos corretamente
+var started = false;											// Flag para verificar se os dados foram inseridos corretamente
 var timer;														// Armazena o timer
 var spd = 1/1500;												// Velocidade da simulação
-
+var optb;														// Armazena velocidade anterior ao pause
+var hidden = false;												// Flag para hidden das opções
+var infoTime;													// Timer das informações
+var infoHidden = true;											// Flag para hidden das informações
+var alwaysShowInfo = false;										// Flag para informações não sumirem
 
 //////////////////////////////////////// FIM DAS DECLARAÇÕES DE VARIÁVEIS ////////////////////////////////////////
 
@@ -21,6 +25,7 @@ var spd = 1/1500;												// Velocidade da simulação
 function salvaMes(mes){
 	mes0 = parseInt(mes);
 	dia0 = mudaMes(mes0);
+	salvaDia(document.getElementById("dia").value);
 }
 
 function salvaDia(dia){
@@ -39,24 +44,226 @@ function mudaHora(horaInput){
 	horaDeg = horaSol * 15;
 	horaDia = horaToHHMM(horaSol);
 	document.getElementById("relogio").innerHTML = horaDia;
+	refreshInfo();
 
 	if(started) {
 		calcGrandezas();
+		bgColor(alpha);
 		desenhaCanvas();
-		if(horaSol < 12) document.getElementById("hora").value = horaSol + spd;
-		else document.getElementById("hora").value = -12;
+		if(spd >= 0){
+			if(horaSol < 12) document.getElementById("hora").value = horaSol + spd;
+			else{
+				document.getElementById("hora").value = -12;
+				passaDia();
+			}
+		}
+		else{
+			if(horaSol > -12) document.getElementById("hora").value = horaSol + spd;
+			else{
+				document.getElementById("hora").value = +12;
+				voltaDia();
+			}
+		}
+	}
+}
+
+function passaDia(){
+	var dia1 = document.getElementById("dia");
+	var dia	 = document.getElementById("dia").value;
+	var mes1 = document.getElementById("mes");
+	var mes	 = document.getElementById("mes").value;
+
+	if (mes == 2){																				// Meses com 28 dias
+		if(dia == 28){ mes1.value++; salvaMes(mes1.value); }
+		else{ dia1.value++; salvaDia(dia1.value); }
+	}
+	if (mes == 4 || mes == 6 || mes == 9 || mes == 11){											// Meses com 30 dias
+		if(dia == 30){ mes1.value++; salvaMes(mes1.value); }
+		else{ dia1.value++; salvaDia(dia1.value); }
+	}
+	if (mes == 1 || mes == 3 || mes == 5 || mes == 7 || mes == 8 || mes == 10){					// Meses com 31 dias
+		if(dia == 31){ mes1.value++; salvaMes(mes1.value); }
+		else{ dia1.value++; salvaDia(dia1.value); }
+	}
+	if(mes == 12){
+		if(dia == 31){ mes1.value = 1; salvaMes(mes1.value); }
+		else{ dia1.value++; salvaDia(dia1.value); }
+	}
+}
+
+function voltaDia(){
+	var dia1 = document.getElementById("dia");
+	var dia	 = document.getElementById("dia").value;
+	var mes1 = document.getElementById("mes");
+	var mes	 = document.getElementById("mes").value;
+
+	if (mes == 3){																				// Meses com 28 dias
+		if(dia == 1){
+			mes1.value--; salvaMes(mes1.value);
+			dia1.value = 28; salvaDia(dia1.value);
+		}
+		else{ dia1.value--; salvaDia(dia1.value); }
+	}
+	if (mes == 5 || mes == 7 || mes == 10 || mes == 12){										// Meses com 30 dias
+		if(dia == 1){
+			mes1.value--; salvaMes(mes1.value);
+			dia1.value = 30; salvaDia(dia1.value);
+		}
+		else{ dia1.value--; salvaDia(dia1.value); }
+	}
+	if (mes == 2 || mes == 4 || mes == 6 || mes == 8 || mes == 9 || mes == 11){					// Meses com 31 dias
+		if(dia == 1){
+			mes1.value--; salvaMes(mes1.value);
+			dia1.value = 31; salvaDia(dia1.value);
+		}
+		else{ dia1.value--; salvaDia(dia1.value); }
+	}
+	if (mes == 1){
+		if(dia == 1){
+			mes1.value = 12; salvaMes(mes1.value);
+			dia1.value = 31; salvaDia(dia1.value);
+		}
+		else{ dia1.value--; salvaDia(dia1.value); }
 	}
 }
 
 function calcGrandezas(){
+	delta = calcDec(n);
 	theta = calcTheta(L,delta,horaDeg);
 	alpha = 90 - theta;
 	phi = calcPhi(L,delta,horaDeg,theta);
-	bgColor(alpha);
-
 
 	//console.log("phi= " +phi);
 	//console.log("alpha= " +alpha);
+}
+
+function getKey(event){
+	var key = event.which || event.keyCode;
+	switch(key){
+		case 32: case 80: case 112: togglePause();	break;
+		case 73: case 105: toggleInfo();	break;
+		case 72: case 104: toggleHelp();	break;
+		case 83: case 115: toggleHide();	break;
+
+		case 43: increaseSpd();	break;
+		case 45: decreaseSpd();	break;
+	}
+}
+
+function toggleHide(){
+	if(!hidden){
+		document.getElementById("options").style.display = "none";
+		hidden = true;
+		showInfo();
+	}
+	else{
+		document.getElementById("options").style.display = "block";
+		hidden = false;
+		showInfo();
+	}
+}
+
+function refreshInfo(){
+	var info;
+	info  = "Dia " +dia0+ " de " +qualMes(mes0)+ "<br>";
+	info += "Latitude " +L+ "º <br>";
+	info += horaDia+ "<br>";
+	info += document.getElementById("velocidade").innerHTML+ "<br>";
+
+	document.getElementById("info").innerHTML = info;
+}
+
+function showInfo(){
+	var info = document.getElementById("info");
+	refreshInfo();
+	clearTimeout(infoTime);
+
+	if(!alwaysShowInfo){
+		if(hidden){
+			info.style.display = "block"; infoHidden = false;
+			infoTime = setTimeout("info.style.display = 'none'; infoHidden = true;",5000);
+		}
+		else{
+			info.style.display = "none";
+			infoHidden = true;
+		}
+	}
+}
+
+function toggleInfo(){
+	var info = document.getElementById("info");
+	clearTimeout(infoTime);
+	if(infoHidden){
+		info.style.display = "block";
+		infoHidden = false;
+		alwaysShowInfo = true;
+	}
+	else{
+		info.style.display = "none";
+		infoHidden = true;
+		alwaysShowInfo = false;
+	}
+}
+
+function toggleHelp(){
+
+}
+
+function togglePause(){
+	if(spd != 0){
+		optb = document.getElementById("speed").value;
+		document.getElementById("speed").value = 0;
+		setSpd(0);
+	}
+	else{
+		setSpd(optb);
+		document.getElementById("speed").value = optb;
+		optb = 0;
+	}
+}
+
+function increaseSpd(){
+	var range = document.getElementById("speed");
+	if(range.value < parseInt(range.max) ){
+		range.value++;
+		setSpd(range.value);
+	}
+}
+
+function decreaseSpd(){
+	var range = document.getElementById("speed");
+	if(range.value > parseInt(range.min) ){
+		range.value--;
+		setSpd(range.value);
+	}
+}
+
+function setSpd(opt){
+	opt = parseInt(opt);
+	switch(opt){
+		case -2: spd = -1/25;		break;
+		case -1: spd = -1/1500;		break;
+		case  0: spd =  0;			break;
+		case  1: spd =  1/90000;	break;
+		case  2: spd =  1/1500;		break;
+		case  3: spd =  1/150;		break;
+		case  4: spd =  1/25;		break;
+		case  5: spd = 24/25;		break;
+	}
+	if(opt == 1) document.getElementById("velocidade").innerHTML = 90000 * spd + "x (Tempo real)";
+	else{
+		if(opt == 5) document.getElementById("velocidade").innerHTML = 90000 * spd + "x (Ultra-rápido)";
+		else{
+			if(opt == 0) document.getElementById("velocidade").innerHTML = "Pause";
+			else document.getElementById("velocidade").innerHTML = 90000 * spd + "x";
+		}
+	}
+	showInfo();
+}
+
+function toggle(){
+	if(started) stop();
+	else start();
 }
 
 function start(){
@@ -64,10 +271,9 @@ function start(){
 	else{
 		if(!dia0) alert("Selecione um dia!");
 		else{
-			delta = calcDec(n);
 			started = true;
 			document.getElementById("toggle").value = "Pare";
-			setTimer();
+			timer = setInterval("mudaHora( document.getElementById('hora').value );",40);		// Define um timer de 25 quadros por segundo
 		}
 	}
 }
@@ -78,45 +284,13 @@ function stop(){
 	document.getElementById("toggle").value = "Começar!";
 }
 
-function toggle(){
-	if(started) stop();
-	else start();
-}
-
-function hide(){
-	if(document.getElementById("options").style.display == "block")
-		document.getElementById("options").style.display = "none";
-	else
-		document.getElementById("options").style.display = "block";
-}
-
-function setSpd(n){
-	n = parseInt(n);
-	switch(n){
-		case -2: spd = -1/1500;		break;
-		case -1: spd =  1/90000;	break;
-		case  0: spd =  0;			break;
-		case  1: spd =  1/1500;		break;
-		case  2: spd =  1/150;		break;
-		case  3: spd =  1/25;		break;
-	}
-	if(n == (-1) ) document.getElementById("velocidade").innerHTML = "1x (Tempo real)";
-	else{
-		if( n == 0) document.getElementById("velocidade").innerHTML = "Pause";
-		else document.getElementById("velocidade").innerHTML = 90000 * spd + "x";
-	}
-}
-
-function setTimer(){
-	clearInterval(timer);
-	timer = setInterval("mudaHora( document.getElementById('hora').value );",40);		// Define um timer de 25 quadros por segundo
-}
-
 function desenhaCanvas(){
 	var cnv = document.getElementById("cenario");
 	var ctx = cnv.getContext("2d");
-	var coords = desenhaSol(L,cnv,phi,alpha);
+
+	var coords = coordSol(L,cnv,phi,alpha);
 	var x = parseFloat(coords[0]);	var y = parseFloat(coords[1]);
+
 	var h = 50;		// Altura do horizonte;
 	ctx.clearRect(0,0,cnv.width,cnv.height);
 
@@ -124,23 +298,32 @@ function desenhaCanvas(){
 	else {}*/
 	
 //////////////// Desenha o sol
-	var gradient = ctx.createRadialGradient(x,y,5,x,y,105);
-	gradient.addColorStop(  0 , 'yellow');
-	gradient.addColorStop(0.10, 'orange');
-	gradient.addColorStop(0.50, document.body.style.backgroundColor);
+	var radGradient = ctx.createRadialGradient(x,y,5,x,y,105);
+	radGradient.addColorStop(  0 , 'yellow');
+	radGradient.addColorStop(0.10, 'orange');
+	radGradient.addColorStop(0.50, document.body.style.backgroundColor);
 
 	ctx.translate(0/*-cnv.width/2*/,-h);
 	ctx.beginPath();
 	ctx.arc(x,y,200,0,2 * Math.PI);
-	ctx.fillStyle = gradient;
+	ctx.fillStyle = radGradient;
 	ctx.fill();
 	ctx.translate(0/*+cnv.width/2*/,+h);
+	ctx.closePath();
 
 //////////////// Desenha o horizonte
+	var colors = horColor(alpha);
+	var horColor0 = colors[0]; var horColor1 = colors[1];
+
+	var linGradient = ctx.createLinearGradient(0,cnv.height,0,cnv.height-h);
+	linGradient.addColorStop(  0 , horColor0);
+	linGradient.addColorStop(0.75, horColor0);
+	linGradient.addColorStop(  1 , horColor1);
+
 	ctx.beginPath();
 	ctx.rect(0,cnv.height-h,cnv.width,h);
-	ctx.fillStyle = "green";
-	ctx.fill();
+	ctx.fillStyle = linGradient;
+	ctx.fill();;
 	ctx.closePath();
 
 //////////////// Escreve os pontos cardeais
