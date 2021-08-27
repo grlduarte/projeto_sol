@@ -30,9 +30,11 @@ function salvaDia(dia){
 
 function salvaLatitude(lat){
 	L = parseFloat(lat);
+	document.getElementById("mostraLat").innerHTML = L.toFixed(2) +"º";
 }
 
 function mudaHora(horaInput){
+	salvaLatitude(document.getElementById("latitude").value);
 	horaSol = parseFloat(horaInput);
 	horaDeg = horaSol * 15;
 	horaDia = horaToHHMM(horaSol);
@@ -63,7 +65,6 @@ function start(){
 		if(!dia0) alert("Selecione um dia!");
 		else{
 			delta = calcDec(n);
-			salvaLatitude(document.getElementById("latitude").value);
 			started = true;
 			document.getElementById("toggle").value = "Pare";
 			setTimer();
@@ -80,6 +81,13 @@ function stop(){
 function toggle(){
 	if(started) stop();
 	else start();
+}
+
+function hide(){
+	if(document.getElementById("options").style.display == "block")
+		document.getElementById("options").style.display = "none";
+	else
+		document.getElementById("options").style.display = "block";
 }
 
 function setSpd(n){
