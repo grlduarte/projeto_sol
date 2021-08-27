@@ -2,14 +2,14 @@ var n;															// Número de dias passados desde o dia 1o de janeiro
 var mes0;														// Guarda o mês selecionado
 var dia0;														// Guarda o dia selecionado
 var delta;														// Declinação do Sol
-var phi;														// Azimute no sentido horário sendo que o Norte está em 0º
+var phi;														// Azimute (no sentido horário sendo que o Norte está em 0°)
 var L;															// Latitude escolhida
 var horaSol;													// Hora solar
 var horaDia;													// Hora do dia
 var horaDeg;													// Ângulo horário
-var theta;														// Elevação do sol até o Zênite // theta + alpha = 90º
+var theta;														// Elevação do sol até o Zênite // theta + alpha = 90°
 var alpha;														// Elevação do horizonte até o Sol
-var started = false;											// Flag para verificar se os dados foram inseridos corretamente
+var started = true;												// Flag para verificar se os dados foram inseridos corretamente
 var timer;														// Armazena o timer
 var spd;														// Velocidade da simulação
 var optb;														// Armazena velocidade anterior ao pause
@@ -19,7 +19,12 @@ var infoHidden = true;											// Flag para hidden das informações
 var alwaysShowInfo = false;										// Flag para informações não sumirem
 var helpHidden = true;											// Flag para hidden do menu de ajuda
 var explHidden = true;											// Flag para hidden do menu de explicação
-var anterior = "home";											// Guarda o número da página atual no menu de explicação
+var anterior = "home";											// Guarda a página atual no menu de explicação
+var estrelas = new Image();										// Imagem das estrelas
+	estrelas.src = "image/stars.png"
+
+var mouseX;
+var mouseY;
 
 //////////////////////////////////////// FIM DAS DECLARAÇÕES DE VARIÁVEIS ////////////////////////////////////////
 
@@ -29,16 +34,17 @@ function salvaMes(mes){
 	mes0 = parseInt(mes);
 	dia0 = mudaMes(mes0);
 	salvaDia(document.getElementById("dia").value);
+	document.getElementById("mes").value = mes;
 }
 
 function salvaDia(dia){
 	dia0 = parseInt(dia);
-//	n = contaDias(dia0,mes0);
+	document.getElementById("dia").value = dia;
 }
 
 function salvaLatitude(lat){
 	L = parseFloat(lat);
-	document.getElementById("mostraLat").innerHTML = L.toFixed(2) +"º";
+	document.getElementById("mostraLat").innerHTML = L.toFixed(2) +"°";
 }
 
 function mudaHora(horaInput){
@@ -136,9 +142,15 @@ function voltaDia(){
 
 function calcGrandezas(){
 	delta = calcDec(n);
-	theta = calcTheta(L,delta,horaDeg);
-	alpha = 90 - theta;
-	phi = calcPhi(L,delta,horaDeg,theta);
+
+	theta  = calcTheta(+L,delta,horaDeg);
+	theta2 = calcTheta(-L,delta,horaDeg);
+
+	alpha  = 90 - theta;
+	alpha2 = 90 - theta2;
+
+	phi  = calcPhi(+L,delta,horaDeg,theta );
+	phi2 = calcPhi(-L,delta,horaDeg,theta2);
 }
 
 function getKey(event){
@@ -160,6 +172,17 @@ function getClick(){
 	else toggleOpt();
 }
 
+function getMousePos(event){
+	mouseX = event.clientX;
+	mouseY = event.clientY;
+
+	imagens = document.getElementsByClassName("imagem");
+	for (var i = 0; i < imagens.length; i++){
+		imagens[i].style.left = mouseX + "px";
+		imagens[i].style.top = mouseY + "px";
+	}
+}
+
 function toggleOpt(){
 	if(!optHidden){
 		document.getElementById("options").style.display = "none";
@@ -176,7 +199,7 @@ function toggleOpt(){
 function refreshInfo(){
 	var info;
 	info  = "Dia " +dia0+ " de " +qualMes(mes0)+ "<br>";
-	info += "Latitude " +L+ "º <br>";
+	info += "Latitude " +L+ "° <br>";
 	info += horaDia+ "<br>";
 	info += document.getElementById("velocidade").innerHTML+ "<br>";
 
@@ -328,7 +351,7 @@ function start(){
 		if(!dia0) alert("Selecione um dia!");
 		else{
 			started = true;
-			document.getElementById("toggle").value = "Pare";
+			//document.getElementById("toggle").value = "Pare";
 			timer = setInterval("mudaHora( document.getElementById('hora').value );",40);		// Define um timer de 25 quadros por segundo
 		}
 	}
@@ -342,25 +365,41 @@ function stop(){
 
 function desenhaCanvas(){
 	var cnv = document.getElementById("cenario");
-	var ctx = cnv.getContext("2d");
-		cnv.width = window.innerWidth;
-		cnv.height = window.innerHeight;
+		var ctx = cnv.getContext("2d");
+	resize();
 
-	var coords = coordSol(L,cnv,phi,alpha);
+	var coords = coordSol(L,cnv,phi,alpha,n);
 	var x = parseFloat(coords[0]);	var y = parseFloat(coords[1]);
 
 	var h = 50;		// Altura do horizonte;
-	ctx.clearRect(0,0,cnv.width,cnv.height);	
-	
+	ctx.clearRect(0,0,cnv.width,cnv.height);
+
+//////////////// Desenha as estrelas
+	ctx.beginPath();
+	ctx.globalAlpha = starsAlpha(alpha);
+
+	ctx.translate(+cnv.width/2, +cnv.height * sinD(delta) );
+	ctx.rotate(+toRad(phi) );
+
+	ctx.translate(-estrelas.width/2, -estrelas.height/2);
+	ctx.drawImage(estrelas,0,0);
+	ctx.translate(+estrelas.width/2, +estrelas.height/2);
+
+	ctx.rotate(-toRad(phi) );
+	ctx.translate(-cnv.width/2, -cnv.height * sinD(delta) );
+
+	ctx.globalAlpha = 1;
+	ctx.closePath();
+
 //////////////// Desenha o sol
-	var radGradient = ctx.createRadialGradient(x,y,5,x,y,105);
+	var radGradient = ctx.createRadialGradient(x,y,5,x,y,52.5);
 	radGradient.addColorStop(  0 , 'yellow');
-	radGradient.addColorStop(0.10, 'orange');
-	radGradient.addColorStop(0.50, document.body.style.backgroundColor);
+	radGradient.addColorStop(0.20, 'orange');
+	radGradient.addColorStop(1.00, document.body.style.backgroundColor);
 
 	ctx.translate(0,-h);
 	ctx.beginPath();
-	ctx.arc(x,y,200,0,2 * Math.PI);
+	ctx.arc(x,y,52.5,0,2 * Math.PI);
 	ctx.fillStyle = radGradient;
 	ctx.fill();
 	ctx.translate(0,+h);
@@ -385,25 +424,43 @@ function desenhaCanvas(){
 	ctx.beginPath();
 	ctx.font = "30px Arial";
 	ctx.fillStyle = "red";
-	if(L <= 0){
+	if(L < 0){
 		ctx.fillText("O",15, cnv.height - 15);
 		ctx.fillText("N",cnv.width / 2, cnv.height - 15);
 		ctx.fillText("L",cnv.width - 30, cnv.height - 15);
 	}
 	else{
-		ctx.fillText("L",15, cnv.height - 15);
-		ctx.fillText("S",cnv.width / 2, cnv.height - 15);
-		ctx.fillText("O",cnv.width - 30, cnv.height - 15);
+		if(L > 0){
+			ctx.fillText("L",15, cnv.height - 15);
+			ctx.fillText("S",cnv.width / 2, cnv.height - 15);
+			ctx.fillText("O",cnv.width - 30, cnv.height - 15);
+		}
+		else{
+			if(n <= 182){
+				ctx.fillText("O",15, cnv.height - 15);
+				ctx.fillText("N",cnv.width / 2, cnv.height - 15);
+				ctx.fillText("L",cnv.width - 30, cnv.height - 15);
+			}
+			else{
+				ctx.fillText("L",15, cnv.height - 15);
+				ctx.fillText("S",cnv.width / 2, cnv.height - 15);
+				ctx.fillText("O",cnv.width - 30, cnv.height - 15);
+			}
+		}
 	}
 	ctx.closePath();
 }
 
 function trocaPag(atual){
 	document.getElementById(anterior+"Pag").style.display = "none";
+	document.getElementById(anterior+"Menu").style.backgroundColor = "rgba(0, 0, 100,0.25)";
+
 	document.getElementById(atual+"Pag").style.display = "block";
+	document.getElementById(atual+"Menu").style.backgroundColor = "rgba(0, 0, 100,0.50)";
+
 	anterior = atual;
 }
 
 function enviaVar(){
-	recebeVar(started,n,delta,horaDeg,horaSol,phi,L,alpha);
+	recebeVar(started,n,delta,horaDeg,horaSol,phi,phi2,L,alpha,alpha2);
 }

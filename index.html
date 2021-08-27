@@ -7,7 +7,7 @@
 <style>
 * { margin:0; padding:0; }
 
-html, body { width:100%; height:100%; z-index:1;}
+html, body { width:100%; height:100%; }
 
 th, td {
     padding-right: 15px;
@@ -18,18 +18,19 @@ th, td {
 	display: block;
 	width: 300px;
 	height: 320px;
-	position: fixed;
+	position: absolute;
+	z-index: 2;
 	top: 15px;
 	left: 15px;
 	text-align: center;
-	color: white;
 }
 
 #info {
 	display: none;
 	width: 200px;
 	height: 100px;
-	position: fixed;
+	position: absolute;
+	z-index: 2;
 	top: 15px;
 	right: 15px;
 	text-align: right;
@@ -38,13 +39,14 @@ th, td {
 
 #ajuda {
 	display: none;
-	position: fixed;
+	position: absolute;
+	z-index: 2;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
 	padding: 30px;
 	text-align: left;
-	background-color: rgba(0, 0, 100,0.1);
+	background-color: rgba(0, 0, 100, 0.10);
 	border-style: solid;
 	border-width: 2px;
 	border-radius: 10px;
@@ -54,24 +56,79 @@ th, td {
 	display: none;
 	width: 50%;
 	height: 80%;
-	position: fixed;
-	z-index:2;
+	position: absolute;
+	z-index: 3;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
 	padding: 0px;
 	text-align: left;
-	background-color: rgba(0, 0, 100,0.1);
+	background-color: rgba(0, 0, 150, 0.10);
 	border-style: solid;
 	border-width: 2px;
 	border-radius: 10px;
 }
 
-#cenario { display: block; }
+#texto {
+	width: 80%;
+	padding-left: 30px;
+	text-align: justify;
+	font-family: Arial;
+	vertical-align: top;
+}
+
+.menu {
+	width: 20%;
+	padding: 5px;
+	text-align: center;
+	font-family: Arial;
+	font-weight: bold;
+	background-color: rgba(0, 0, 100, 0.25);
+	border-radius: 5px;
+	cursor: pointer;
+
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+}
+
+.fechar {
+	width: 40px;
+	height: 20px;
+	position: absolute;
+	right: 0px;
+	top: 0px;
+	text-align: center;
+	font-family: Arial;
+	font-weight: bold;	
+	background-color: rgba(0, 0, 100, 0.25);
+	border-top-right-radius: 5px;
+	border-bottom-left-radius: 5px;
+	cursor: default;
+
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-o-user-select: none;
+	user-select: none;	
+}
+
+.submenu {
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+#cenario {
+	display: block; position:absolute; z-index: 1;
+}
 
 </style>
 
-<body onload="init();" onkeypress="getKey(event);">
+<body onload="init();" onkeypress="getKey(event);" onmousemove="getMousePos(event);">
  
 	<div id="options">
 		<br>
@@ -103,10 +160,9 @@ th, td {
 		<br><br>
 
 		<p id="velocidade"></p>
-		<input type="range" id="speed" value="2" min="-2" max="5" step="1" onInput="setSpd(this.value);">
+		<input type="range" id="speed" value="1" min="-2" max="5" step="1" onInput="setSpd(this.value);">
 		<br><br>
-		<input type="button" id="help" style="width:75px" value="Ajuda" onClick="toggleHelp();"> &nbsp
-		<input type="button" id="toggle" style="width:75px" value="Começar!" onClick="toggle();">
+		<input type="button" id="help" style="width:75px; cursor:help;" value="Ajuda" onClick="toggleHelp();" onfocus="blur(this);">
 		<br><br>
 	</div>
 
@@ -124,18 +180,18 @@ th, td {
 	</div>
 
 	<div id="explica">
-		<table style="position:fixed; width:100%; height:100%; padding:30px; margin:auto">
+		<table style="position:fixed; width:100%; height:100%; padding:20px; margin:auto">
 			<tr> 
-				<td onClick="trocaPag('home');"> Página Inicial </td>
-				<td id="texto" width="80%" rowspan="7"> </td> 
+				<td id="homeMenu" class="menu" onClick="trocaPag('home');"> Página Inicial </td>
+				<td id="texto" rowspan="8"> </td> 
 			</tr>
-			<tr> <td onClick="trocaPag('dec');"> Declinação </td> </tr>
-			<tr> <td onClick="trocaPag('ang');"> Ângulo Horário </td> </tr>
-			<tr> <td onClick="trocaPag('azi');"> Azimute </td> </tr>
-			<tr> <td onClick="trocaPag('alt');"> Altura </td> </tr>
-			<tr> <td onClick="trocaPag('lat');"> Latitude </td> </tr>
-			<tr> <td onClick="trocaPag('eqs');"> Equações </td> </tr>
+			<tr> <td id="decMenu" class="menu" onClick="trocaPag('dec');"> Declinação </td> </tr>
+			<tr> <td id="angMenu" class="menu" onClick="trocaPag('ang');"> Ângulo Horário </td> </tr>
+			<tr> <td id="aziMenu" class="menu" onClick="trocaPag('azi');"> Azimute </td> </tr>
+			<tr> <td id="altMenu" class="menu" onClick="trocaPag('alt');"> Altura </td> </tr>
+			<tr> <td id="latMenu" class="menu" onClick="trocaPag('lat');"> Latitude </td> </tr>
 		</table>
+		<span class="fechar" onClick="toggleExpl();" onmouseover="this.style.backgroundColor = 'rgba(0, 0, 100, 0.50)';" onmouseout="this.style.backgroundColor = 'rgba(0, 0, 100, 0.25)';"> x </span>
 	</div>
 
 
@@ -147,24 +203,31 @@ th, td {
 <script src="textExpl.js"></script>
 <script src="functions.js"></script>
 <script src="newMath.js"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
 
 
 <script>
 
 function init(){
-	bgColor();
-	salvaMes(document.getElementById("mes").value);
-	salvaDia(document.getElementById("dia").value);
+	var d = new Date();
+	var hhmm = d.getHours() + d.getMinutes() /60 + d.getSeconds() /3600 + d.getMilliseconds() /3600000 -12;
+	salvaMes(d.getMonth()+1 );
+	salvaDia(d.getDate() );
+
 	salvaLatitude(document.getElementById("latitude").value);
 	setSpd(document.getElementById("speed").value);
-	mudaHora(document.getElementById("hora").value);
-	enviaVar();
-	textColor();
+	
+	trocaPag("home");
+	resize();
 
+	mudaHora(hhmm);
+	start();
+}
+
+function resize(){
 	var canvas = document.getElementById("cenario");
 		canvas.width = window.innerWidth;
 		canvas.height = window.innerHeight;
-//	setInterval("mudaHora( document.getElementById('hora').value );",40);
 }
 
 </script>

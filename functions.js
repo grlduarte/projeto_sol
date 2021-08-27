@@ -146,7 +146,7 @@ function bgColor(alpha){
 		}
 	}
 	else color = "rgb(0,0,0)";
-	document.body.style.background = color; 
+	document.body.style.background = color;
 }
 
 function horColor(){
@@ -170,6 +170,7 @@ function horColor(){
 }
 
 function textColor(){
+	var options = document.getElementById("options");
 	var ajuda = document.getElementById("ajuda");
 	var explica = document.getElementById("explica");
 	var color;
@@ -186,30 +187,65 @@ function textColor(){
 	}
 	else{ color = "white"; }
 
+	options.style.color = color;
 	ajuda.style.color = color;
 	ajuda.style.border.color = color;
 	explica.style.color = color;
 	explica.style.border.color = color;
 }
 
-function coordSol(L,cnv,phi,alpha){
+function coordSol(L,cnv,phi,alpha,n){
 	var coords = [];
 	phiRad = toRad(phi);
 	alphaRad = toRad(alpha);
-	if(L <= 0){													// Coordenadas em X
+	if(L < 0){													// Coordenadas em X
 		if(phi < 180 && phi > 0)
 			coords[0] = 1 * cnv.width  * (1 - 0.5 * triangCos(phiRad) );
 		else
 			coords[0] = 1 * cnv.width  * (0 + 0.5 * triangCos(phiRad) );
 	}
 	else{
-		if(phi < 180 && phi > 0)
-			coords[0] = 1 * cnv.width  * (0 - 0.5 * triangCos(phiRad) );
-		else
-			coords[0] = 1 * cnv.width  * (1 + 0.5 * triangCos(phiRad) );
+
+		if(L == 0){
+
+			if(n <= 182){
+				if(phi < 180 && phi > 0)
+					coords[0] = 1 * cnv.width  * (1 - 0.5 * triangCos(phiRad) );
+				else
+					coords[0] = 1 * cnv.width  * (0 + 0.5 * triangCos(phiRad) );
+			}
+
+			else{
+				if(phi < 180 && phi > 0)
+					coords[0] = 1 * cnv.width  * (0 - 0.5 * triangCos(phiRad) );
+				else
+					coords[0] = 1 * cnv.width  * (1 + 0.5 * triangCos(phiRad) );
+			}				
+		}
+
+
+		else{
+			if(phi < 180 && phi > 0)
+				coords[0] = 1 * cnv.width  * (0 - 0.5 * triangCos(phiRad) );
+			else
+				coords[0] = 1 * cnv.width  * (1 + 0.5 * triangCos(phiRad) );
+		}
 	}
 		
 	coords[1] = cnv.height * (1 - triangSin(alphaRad) );		// Coordenadas em Y
 	
 	return coords;
+}
+
+function starsAlpha(alpha){
+	var transp;
+	if(alpha > 0) 
+		transp = 0;
+	else{
+		if(alpha > -15)
+			transp = (-alpha - 0)/15;
+		else
+			transp = 1;
+	}
+	return transp;
 }
