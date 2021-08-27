@@ -108,7 +108,10 @@ function calcPhi(L,delta,H,theta){
 	var phiArc = ( Math.sin(sin1) * Math.cos(cos1) - Math.cos(cos2) * Math.cos(cos3) * Math.sin(sin2) ) / Math.sin(sin3);
 	var phi = toDeg( Math.acos(phiArc) );
 
-	if ( isNaN(phi) ) phi = 0;
+	if ( isNaN(phi) ){
+		if(L<=0) phi = 0;
+		else phi = 180;
+	}
 	else{
 			if(H > 0) phi = 360 - phi;
 			if(H < 0){}

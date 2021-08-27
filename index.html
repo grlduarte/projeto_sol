@@ -7,7 +7,7 @@
 <style>
 * { margin:0; padding:0; }
 
-html, body { width:100%; height:100%; }
+html, body { width:100%; height:100%; z-index:1;}
 
 th, td {
     padding-right: 15px;
@@ -44,6 +44,7 @@ th, td {
 	transform: translate(-50%, -50%);
 	padding: 30px;
 	text-align: left;
+	background-color: rgba(0, 0, 100,0.1);
 	border-style: solid;
 	border-width: 2px;
 	border-radius: 10px;
@@ -51,12 +52,16 @@ th, td {
 
 #explica {
 	display: none;
+	width: 50%;
+	height: 80%;
 	position: fixed;
+	z-index:2;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	padding: 30px;
-	text-align: center;
+	padding: 0px;
+	text-align: left;
+	background-color: rgba(0, 0, 100,0.1);
 	border-style: solid;
 	border-width: 2px;
 	border-radius: 10px;
@@ -106,7 +111,7 @@ th, td {
 	</div>
 
 	<div id="ajuda">
-		<h4>Teclas de atalho</h6>
+		<h4>Teclas de atalho</h4>
 		<table>
 			<tr> <td>	+/-:			</td> <td>Aumenta/Diminui a velocidade de simulação		</td> </tr>
 			<tr> <td>Tecla de espaço, P:</td> <td>Pausa a simulação								</td> </tr>
@@ -118,8 +123,22 @@ th, td {
 		</table>
 	</div>
 
+	<div id="explica">
+		<table style="position:fixed; width:100%; height:100%; padding:30px; margin:auto">
+			<tr> 
+				<td onClick="trocaPag('home');"> Página Inicial </td>
+				<td id="texto" width="80%" rowspan="7"> </td> 
+			</tr>
+			<tr> <td onClick="trocaPag('dec');"> Declinação </td> </tr>
+			<tr> <td onClick="trocaPag('ang');"> Ângulo Horário </td> </tr>
+			<tr> <td onClick="trocaPag('azi');"> Azimute </td> </tr>
+			<tr> <td onClick="trocaPag('alt');"> Altura </td> </tr>
+			<tr> <td onClick="trocaPag('lat');"> Latitude </td> </tr>
+			<tr> <td onClick="trocaPag('eqs');"> Equações </td> </tr>
+		</table>
+	</div>
 
-	<div id="explica"></div>
+
 	<div id="info"></div>
 	<canvas id="cenario" align="center" onClick="getClick();"> </canvas>
 
@@ -141,11 +160,11 @@ function init(){
 	mudaHora(document.getElementById("hora").value);
 	enviaVar();
 	textColor();
-	escreveExpl();
 
 	var canvas = document.getElementById("cenario");
 		canvas.width = window.innerWidth;
 		canvas.height = window.innerHeight;
+//	setInterval("mudaHora( document.getElementById('hora').value );",40);
 }
 
 </script>

@@ -19,7 +19,7 @@ var infoHidden = true;											// Flag para hidden das informações
 var alwaysShowInfo = false;										// Flag para informações não sumirem
 var helpHidden = true;											// Flag para hidden do menu de ajuda
 var explHidden = true;											// Flag para hidden do menu de explicação
-var pag = 1;													// Guarda o número da página atual no menu de explicação
+var anterior = "home";											// Guarda o número da página atual no menu de explicação
 
 //////////////////////////////////////// FIM DAS DECLARAÇÕES DE VARIÁVEIS ////////////////////////////////////////
 
@@ -55,7 +55,6 @@ function mudaHora(horaInput){
 		enviaVar();
 		bgColor(alpha);
 		textColor();
-		escreveExpl();
 		desenhaCanvas();
 
 		if(spd >= 0){
@@ -399,29 +398,12 @@ function desenhaCanvas(){
 	ctx.closePath();
 }
 
-function escreveExpl(){
-	switch(pag){
-		case 1:	homePag();	break;
-		case 2: decPag();	break;
-		case 3: aziPag();	break;
-	}
-}
-
-function nextPag(){
-	if(pag < 2) pag++;
-	else{}
-}
-
-function prevPag(){
-	if(pag > 1) pag--;
-	else{}
-}
-
-function changePag(pagina){
-	pag = parseInt(pagina);
-	escreveExpl();
+function trocaPag(atual){
+	document.getElementById(anterior+"Pag").style.display = "none";
+	document.getElementById(atual+"Pag").style.display = "block";
+	anterior = atual;
 }
 
 function enviaVar(){
-	recebeVar(started,n,delta,phi,L,alpha);
+	recebeVar(started,n,delta,horaDeg,horaSol,phi,L,alpha);
 }
