@@ -1,6 +1,6 @@
 
 function mudaMes(mes){
-	var mes1 = "<option value='false' selected='selected'> </option> ";								// Define o mês de 28 dias
+	var mes1 = "<option value='false' selected> </option> ";								// Define o mês de 28 dias
 	for (var i=1; i<29; i++) mes1 += "<option value=" +i+ ">" +i+ "</option> ";				
 	
 	var mes2 = mes1 + "<option value=29>29</option> <option value=30>30</option> ";				// Define o mês de 30 dias
@@ -50,16 +50,7 @@ function contaDias(dia,mes){
 	}
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-function toRad(degrees){
-	return degrees * Math.PI / 180;
-}
-function toDeg(radians){
-	return radians * 180 / Math.PI;
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function calcDec(n){
 	var sin1 = toRad(-23.44);
@@ -99,7 +90,7 @@ function calcPhi(L,delta,H,theta){
 	var phiArc = ( Math.sin(sin1) * Math.cos(cos1) - Math.cos(cos2) * Math.cos(cos3) * Math.sin(sin2) ) / Math.sin(sin3);
 	var phi = toDeg( Math.acos(phiArc) );
 
-	if ( isNaN(phi) ) phi = 0;
+	if ( isNaN(phi) ) phi = 180;
 	else{
 			if(H > 0) phi = 360 - phi;
 			if(H < 0){}
@@ -137,12 +128,24 @@ function bgColor(alpha){
 	document.body.style.background = color; 
 }
 
-function desenhaSol(phi,alpha){
+function desenhaSol(L,cnv,phi,alpha){
 	var coords = [];
-	phi = toRad(phi);
-	alpha = toRad(alpha);
-	coords[0] = document.getElementById("cenario").width * (1 - Math.cos(phi) );
-	coords[1] = document.getElementById("cenario").height * (1 - Math.sin(alpha) );
-
+	phiRad = toRad(phi);
+	alphaRad = toRad(alpha);
+	if(L <= 0){													// Coordenadas em X
+		if(phi < 180 && phi > 0)
+			coords[0] = 1 * cnv.width  * (1 - 0.5 * triangCos(phiRad) );
+		else
+			coords[0] = 1 * cnv.width  * (0 + 0.5 * triangCos(phiRad) );
+	}
+	else{
+		if(phi < 180 && phi > 0)
+			coords[0] = 1 * cnv.width  * (0 - 0.5 * triangCos(phiRad) );
+		else
+			coords[0] = 1 * cnv.width  * (1 + 0.5 * triangCos(phiRad) );
+	}
+		
+	coords[1] = cnv.height * (1 - triangSin(alphaRad) );		// Coordenadas em Y
+	
 	return coords;
 }

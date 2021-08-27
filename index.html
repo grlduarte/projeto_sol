@@ -4,13 +4,13 @@
 
 <title>Onde estará o Sol?</title>
 
-<body onload="bgColor();" style="color:white">
+<body onload="init();" style="color:white">
  
 	<div style="text-align:center">
 		<br>
 		Mês: 
 		<select id="mes" onchange="salvaMes(this.value);">
-			<option value="false" selected="selected"> </option>
+			<option value="false" selected> </option>
 			<option value="1">Janeiro</option>
 			<option value="2">Fevereiro</option>
 			<option value="3">Março</option>
@@ -36,18 +36,33 @@
 		<input type="range" id="hora" value="-6" min="-12" max="12" step="0.00001" onInput="mudaHora(this.value);">
 		<br><br>
 		<p id="velocidade">60x</p>
-		<input type="range" id="hora" value="1" min="-1" max="3" step="1" onInput="setSpd(this.value);">
+		<input type="range" id="speed" value="1" min="-2" max="3" step="1" onInput="setSpd(this.value);">
 		<br><br>
 	</div>
 
-	<div align="center">
-		<canvas id="cenario" width="1550" height="600" style="border: 1px solid black;"> </canvas>
-	</div>
-
+		<canvas id="cenario" align="center"> </canvas>
 
 
 <script src="functions.js"></script>
 <script src="execute.js"></script>
+<script src="newMath.js"></script>
+
+<script>
+
+function init(){
+	bgColor();
+	salvaMes(document.getElementById("mes").value);
+	salvaLatitude(document.getElementById("latitude").value);
+	mudaHora(document.getElementById("hora").value);
+	setSpd(document.getElementById("speed").value);
+
+	var canvas = document.getElementById("cenario");
+		canvas.width = window.innerWidth;	//document.body.clientWidth;
+		canvas.height = window.innerHeight;
+
+}
+
+</script>
 
 </body>
 </html>
