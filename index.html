@@ -1,0 +1,53 @@
+<!DOCTYPE HTML>
+<meta charset="utf-8">
+<html>
+
+<title>Onde estará o Sol?</title>
+
+<body onload="bgColor();" style="color:white">
+ 
+	<div style="text-align:center">
+		<br>
+		Mês: 
+		<select id="mes" onchange="salvaMes(this.value);">
+			<option value="false" selected="selected"> </option>
+			<option value="1">Janeiro</option>
+			<option value="2">Fevereiro</option>
+			<option value="3">Março</option>
+			<option value="4">Abril</option>
+			<option value="5">Maio</option>
+			<option value="6">Junho</option>
+			<option value="7">Julho</option>
+			<option value="8">Agosto</option>
+			<option value="9">Setembro</option>
+			<option value="10">Outubro</option>
+			<option value="11">Novembro</option>
+			<option value="12">Dezembro</option>
+		</select>	&nbsp
+		Dia:
+		<select id="dia" onchange="salvaDia(this.value);"></select>
+		<br><br>
+		Latitude (em graus decimais): 
+		<input type="text" id="latitude" size="8" value="-27.5967"> º
+		<br><br>
+		<input type="button" id="toggle" value="Começar!" onClick="toggle();">
+		<br><br>
+		<p id="relogio">06h 00m 00s</p>
+		<input type="range" id="hora" value="-6" min="-12" max="12" step="0.00001" onInput="mudaHora(this.value);">
+		<br><br>
+		<p id="velocidade">60x</p>
+		<input type="range" id="hora" value="1" min="-1" max="3" step="1" onInput="setSpd(this.value);">
+		<br><br>
+	</div>
+
+	<div align="center">
+		<canvas id="cenario" width="1550" height="600" style="border: 1px solid black;"> </canvas>
+	</div>
+
+
+
+<script src="functions.js"></script>
+<script src="execute.js"></script>
+
+</body>
+</html>
