@@ -3,20 +3,23 @@ var mes0;														// Guarda o mês selecionado
 var dia0;														// Guarda o dia selecionado
 var delta;														// Declinação do Sol
 var phi;														// Azimute no sentido horário sendo que o Norte está em 0º
-var L = -27.5967;												// Latitude escolhida
-var horaSol = -6;												// Hora solar
+var L;															// Latitude escolhida
+var horaSol;													// Hora solar
 var horaDia;													// Hora do dia
 var horaDeg;													// Ângulo horário
 var theta;														// Elevação do sol até o Zênite // theta + alpha = 90º
 var alpha;														// Elevação do horizonte até o Sol
 var started = false;											// Flag para verificar se os dados foram inseridos corretamente
 var timer;														// Armazena o timer
-var spd = 1/1500;												// Velocidade da simulação
+var spd;														// Velocidade da simulação
 var optb;														// Armazena velocidade anterior ao pause
-var hidden = false;												// Flag para hidden das opções
+var optHidden = false;											// Flag para hidden das opções
 var infoTime;													// Timer das informações
 var infoHidden = true;											// Flag para hidden das informações
 var alwaysShowInfo = false;										// Flag para informações não sumirem
+var helpHidden = true;											// Flag para hidden do menu de ajuda
+var explHidden = true;											// Flag para hidden do menu de explicação
+var pag = 1;													// Guarda o número da página atual no menu de explicação
 
 //////////////////////////////////////// FIM DAS DECLARAÇÕES DE VARIÁVEIS ////////////////////////////////////////
 
@@ -30,7 +33,7 @@ function salvaMes(mes){
 
 function salvaDia(dia){
 	dia0 = parseInt(dia);
-	n = contaDias(dia0,mes0);
+//	n = contaDias(dia0,mes0);
 }
 
 function salvaLatitude(lat){
@@ -43,13 +46,18 @@ function mudaHora(horaInput){
 	horaSol = parseFloat(horaInput);
 	horaDeg = horaSol * 15;
 	horaDia = horaToHHMM(horaSol);
+	n = contaDias(dia0,mes0) + (horaSol + 12) / 24;
 	document.getElementById("relogio").innerHTML = horaDia;
 	refreshInfo();
 
 	if(started) {
 		calcGrandezas();
+		enviaVar();
 		bgColor(alpha);
+		textColor();
+		escreveExpl();
 		desenhaCanvas();
+
 		if(spd >= 0){
 			if(horaSol < 12) document.getElementById("hora").value = horaSol + spd;
 			else{
@@ -132,9 +140,6 @@ function calcGrandezas(){
 	theta = calcTheta(L,delta,horaDeg);
 	alpha = 90 - theta;
 	phi = calcPhi(L,delta,horaDeg,theta);
-
-	//console.log("phi= " +phi);
-	//console.log("alpha= " +alpha);
 }
 
 function getKey(event){
@@ -143,22 +148,28 @@ function getKey(event){
 		case 32: case 80: case 112: togglePause();	break;
 		case 73: case 105: toggleInfo();	break;
 		case 72: case 104: toggleHelp();	break;
-		case 83: case 115: toggleHide();	break;
+		case 77: case 109: toggleExpl();	break;
+		case 83: case 115: toggleOpt();		break;
 
 		case 43: increaseSpd();	break;
 		case 45: decreaseSpd();	break;
 	}
 }
 
-function toggleHide(){
-	if(!hidden){
+function getClick(){
+	if(!helpHidden) toggleHelp();
+	else toggleOpt();
+}
+
+function toggleOpt(){
+	if(!optHidden){
 		document.getElementById("options").style.display = "none";
-		hidden = true;
+		optHidden = true;
 		showInfo();
 	}
 	else{
 		document.getElementById("options").style.display = "block";
-		hidden = false;
+		optHidden = false;
 		showInfo();
 	}
 }
@@ -179,7 +190,7 @@ function showInfo(){
 	clearTimeout(infoTime);
 
 	if(!alwaysShowInfo){
-		if(hidden){
+		if(optHidden){
 			info.style.display = "block"; infoHidden = false;
 			infoTime = setTimeout("info.style.display = 'none'; infoHidden = true;",5000);
 		}
@@ -206,7 +217,53 @@ function toggleInfo(){
 }
 
 function toggleHelp(){
+	var ajuda = document.getElementById("ajuda");
+	if(explHidden){
+		if (helpHidden){
+			ajuda.style.display = "block";
+			helpHidden = false;
+		}
+		else{
+			ajuda.style.display = "none";
+			helpHidden = true;
+		}
+	}
+	else{
+		toggleExpl();
+		if (helpHidden){
+			ajuda.style.display = "block";
+			helpHidden = false;
+		}
+		else{
+			ajuda.style.display = "none";
+			helpHidden = true;
+		}
+	}
+}
 
+function toggleExpl(){
+	var explica = document.getElementById("explica");
+	if(helpHidden){
+		if (explHidden){
+			explica.style.display = "block";
+			explHidden = false;
+		}
+		else{
+			explica.style.display = "none";
+			explHidden = true;
+		}
+	}
+	else{
+		toggleHelp();
+		if (explHidden){
+			explica.style.display = "block";
+			explHidden = false;
+		}
+		else{
+			explica.style.display = "none";
+			explHidden = true;
+		}
+	}
 }
 
 function togglePause(){
@@ -287,15 +344,14 @@ function stop(){
 function desenhaCanvas(){
 	var cnv = document.getElementById("cenario");
 	var ctx = cnv.getContext("2d");
+		cnv.width = window.innerWidth;
+		cnv.height = window.innerHeight;
 
 	var coords = coordSol(L,cnv,phi,alpha);
 	var x = parseFloat(coords[0]);	var y = parseFloat(coords[1]);
 
 	var h = 50;		// Altura do horizonte;
-	ctx.clearRect(0,0,cnv.width,cnv.height);
-
-/*	if(!document.getElementById("rastro").checked) ctx.clearRect(0,0,cnv.width,cnv.height);
-	else {}*/
+	ctx.clearRect(0,0,cnv.width,cnv.height);	
 	
 //////////////// Desenha o sol
 	var radGradient = ctx.createRadialGradient(x,y,5,x,y,105);
@@ -303,12 +359,12 @@ function desenhaCanvas(){
 	radGradient.addColorStop(0.10, 'orange');
 	radGradient.addColorStop(0.50, document.body.style.backgroundColor);
 
-	ctx.translate(0/*-cnv.width/2*/,-h);
+	ctx.translate(0,-h);
 	ctx.beginPath();
 	ctx.arc(x,y,200,0,2 * Math.PI);
 	ctx.fillStyle = radGradient;
 	ctx.fill();
-	ctx.translate(0/*+cnv.width/2*/,+h);
+	ctx.translate(0,+h);
 	ctx.closePath();
 
 //////////////// Desenha o horizonte
@@ -340,5 +396,32 @@ function desenhaCanvas(){
 		ctx.fillText("S",cnv.width / 2, cnv.height - 15);
 		ctx.fillText("O",cnv.width - 30, cnv.height - 15);
 	}
-	ctx.closePath(); 
+	ctx.closePath();
+}
+
+function escreveExpl(){
+	switch(pag){
+		case 1:	homePag();	break;
+		case 2: decPag();	break;
+		case 3: aziPag();	break;
+	}
+}
+
+function nextPag(){
+	if(pag < 2) pag++;
+	else{}
+}
+
+function prevPag(){
+	if(pag > 1) pag--;
+	else{}
+}
+
+function changePag(pagina){
+	pag = parseInt(pagina);
+	escreveExpl();
+}
+
+function enviaVar(){
+	recebeVar(started,n,delta,phi,L,alpha);
 }

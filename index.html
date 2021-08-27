@@ -9,6 +9,11 @@
 
 html, body { width:100%; height:100%; }
 
+th, td {
+    padding-right: 15px;
+    font-size: 15px;
+}
+
 #options {
 	display: block;
 	width: 300px;
@@ -31,9 +36,34 @@ html, body { width:100%; height:100%; }
 	color: red;
 }
 
+#ajuda {
+	display: none;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	padding: 30px;
+	text-align: left;
+	border-style: solid;
+	border-width: 2px;
+	border-radius: 10px;
+}
+
+#explica {
+	display: none;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	padding: 30px;
+	text-align: center;
+	border-style: solid;
+	border-width: 2px;
+	border-radius: 10px;
+}
+
 #cenario { display: block; }
 
-#toggle {width: 75px;}
 </style>
 
 <body onload="init();" onkeypress="getKey(event);">
@@ -70,19 +100,35 @@ html, body { width:100%; height:100%; }
 		<p id="velocidade"></p>
 		<input type="range" id="speed" value="2" min="-2" max="5" step="1" onInput="setSpd(this.value);">
 		<br><br>
-
-		<input type="button" id="toggle" value="Começar!" onClick="toggle();">
+		<input type="button" id="help" style="width:75px" value="Ajuda" onClick="toggleHelp();"> &nbsp
+		<input type="button" id="toggle" style="width:75px" value="Começar!" onClick="toggle();">
 		<br><br>
 	</div>
 
+	<div id="ajuda">
+		<h4>Teclas de atalho</h6>
+		<table>
+			<tr> <td>	+/-:			</td> <td>Aumenta/Diminui a velocidade de simulação		</td> </tr>
+			<tr> <td>Tecla de espaço, P:</td> <td>Pausa a simulação								</td> </tr>
+			<tr> <td> Clique na tela, S:</td> <td>Mostra/Esconde o menu de opções de simulação	</td> </tr>
+			<tr> <td>	I:				</td> <td>Mostra/Esconde as informações rápidas			</td> </tr>
+			<tr> <td>	H:				</td> <td>Mostra/Esconde este menu de ajuda				</td> </tr>
+			<tr> <td>	M:				</td> <td>Mostra/Esconde a explicação do programa		</td> </tr>
+			<tr> <td> Clique na tela:	</td> <td>Fecha este menu de ajuda						</td> </tr>
+		</table>
+	</div>
+
+
+	<div id="explica"></div>
 	<div id="info"></div>
+	<canvas id="cenario" align="center" onClick="getClick();"> </canvas>
 
-	<canvas id="cenario" align="center" onClick="toggleHide();"> </canvas>
 
-
-<script src="functions.js"></script>
 <script src="execute.js"></script>
+<script src="textExpl.js"></script>
+<script src="functions.js"></script>
 <script src="newMath.js"></script>
+
 
 <script>
 
@@ -93,9 +139,12 @@ function init(){
 	salvaLatitude(document.getElementById("latitude").value);
 	setSpd(document.getElementById("speed").value);
 	mudaHora(document.getElementById("hora").value);
+	enviaVar();
+	textColor();
+	escreveExpl();
 
 	var canvas = document.getElementById("cenario");
-		canvas.width = window.innerWidth;	//document.body.clientWidth;
+		canvas.width = window.innerWidth;
 		canvas.height = window.innerHeight;
 }
 

@@ -166,6 +166,29 @@ function horColor(){
 	return colors;
 }
 
+function textColor(){
+	var ajuda = document.getElementById("ajuda");
+	var explica = document.getElementById("explica");
+	var color;
+	if(alpha){
+		if(alpha > -4.99){ color = "black"; }
+		else{
+			if(alpha > -5){
+				color = "rgb(" + (255 - parseInt(25500 * (alpha + 5))) + ",";
+				color+=			 (255 - parseInt(25500 * (alpha + 5))) + ",";
+				color+=			 (255 - parseInt(25500 * (alpha + 5))) + ")";
+			}
+			else{ color = "white "; }
+		}
+	}
+	else{ color = "white"; }
+
+	ajuda.style.color = color;
+	ajuda.style.border.color = color;
+	explica.style.color = color;
+	explica.style.border.color = color;
+}
+
 function coordSol(L,cnv,phi,alpha){
 	var coords = [];
 	phiRad = toRad(phi);
