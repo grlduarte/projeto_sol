@@ -1,132 +1,11 @@
 <!DOCTYPE HTML>
 <meta charset="utf-8">
 <html>
+<head>
+    <link rel="stylesheet" href="css/main.css">
+</head>
 
 <title>Onde estará o Sol?</title>
-
-<style>
-* { margin:0; padding:0; }
-
-html, body { width:100%; height:100%; }
-
-th, td {
-    padding-right: 15px;
-    font-size: 15px;
-}
-
-#options {
-	display: block;
-	width: 300px;
-	height: 320px;
-	position: absolute;
-	z-index: 2;
-	top: 15px;
-	left: 15px;
-	text-align: center;
-}
-
-#info {
-	display: none;
-	width: 200px;
-	height: 100px;
-	position: absolute;
-	z-index: 2;
-	top: 15px;
-	right: 15px;
-	text-align: right;
-	color: red;
-}
-
-#ajuda {
-	display: none;
-	position: absolute;
-	z-index: 2;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	padding: 30px;
-	text-align: left;
-	background-color: rgba(0, 0, 100, 0.10);
-	border-style: solid;
-	border-width: 2px;
-	border-radius: 10px;
-}
-
-#explica {
-	display: none;
-	width: 50%;
-	height: 80%;
-	position: absolute;
-	z-index: 3;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	padding: 0px;
-	text-align: left;
-	background-color: rgba(0, 0, 150, 0.10);
-	border-style: solid;
-	border-width: 2px;
-	border-radius: 10px;
-}
-
-#texto {
-	width: 80%;
-	padding-left: 30px;
-	text-align: justify;
-	font-family: Arial;
-	vertical-align: top;
-}
-
-.menu {
-	width: 20%;
-	padding: 5px;
-	text-align: center;
-	font-family: Arial;
-	font-weight: bold;
-	background-color: rgba(0, 0, 100, 0.25);
-	border-radius: 5px;
-	cursor: pointer;
-
-	-webkit-user-select: none;
-	-khtml-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	-o-user-select: none;
-	user-select: none;
-}
-
-.fechar {
-	width: 40px;
-	height: 20px;
-	position: absolute;
-	right: 0px;
-	top: 0px;
-	text-align: center;
-	font-family: Arial;
-	font-weight: bold;	
-	background-color: rgba(0, 0, 100, 0.25);
-	border-top-right-radius: 5px;
-	border-bottom-left-radius: 5px;
-	cursor: default;
-
-	-webkit-user-select: none;
-	-khtml-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	-o-user-select: none;
-	user-select: none;	
-}
-
-.submenu {
-	text-decoration: underline;
-	cursor: pointer;
-}
-
-#cenario {
-	display: block; position:absolute; z-index: 1;
-}
-
-</style>
 
 <body onload="init();" onkeypress="getKey(event);" onmousemove="getMousePos(event);">
  
@@ -163,6 +42,7 @@ th, td {
 		<input type="range" id="speed" value="1" min="-2" max="5" step="1" onInput="setSpd(this.value);">
 		<br><br>
 		<input type="button" id="help" style="width:75px; cursor:help;" value="Ajuda" onClick="toggleHelp();" onfocus="blur(this);">
+		<input type="button" style="width:75px;" value="Código" onClick="location.href='https://github.com/grlduarte/projeto_sol';" onfocus="blur(this);">
 		<br><br>
 	</div>
 
@@ -199,10 +79,10 @@ th, td {
 	<canvas id="cenario" align="center" onClick="getClick();"> </canvas>
 
 
-<script src="execute.js"></script>
-<script src="textExpl.js"></script>
-<script src="functions.js"></script>
-<script src="newMath.js"></script>
+<script src="js/execute.js"></script>
+<script src="js/textExpl.js"></script>
+<script src="js/functions.js"></script>
+<script src="js/newMath.js"></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
 
 

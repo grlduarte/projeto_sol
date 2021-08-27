@@ -169,10 +169,9 @@ text.innerHTML+= "<div id='altPag' style='display:none'>\
 					Sendo um ângulo, varia de 0° no horizonte até 90° no zênite (o ponto mais alto do céu visível).</p>\
 					<br>\
 					<p>É a variável que mais percebemos mudar ao longo do ano: se comparado o sol do meio dia, é bastante pequena no inverno\
-					e grande no verão do respectivo hemisfério. Para ver essa mudança, analise o\
-					<span class='submenu' onClick='trocaPag(\"grf\");'> gráfico</span>. </p>\
+					e grande no verão do respectivo hemisfério.</p>\
 					<br>\
-					<p>Além disso, é percéptível a diferença de altura quando se varia a latitude:</p>\
+					<p>Além disso, é perceptível a diferença de altura quando se varia a latitude:</p>\
 					<br>\
 					\
 					<table style='text-align:left'>\
@@ -194,19 +193,6 @@ text.innerHTML+= "<div id='latPag' style='display:none'>\
 					<center>\
 					<img src='image/latitude.gif' width='80%'>\
 					</center>\
-					</div>";
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-text.innerHTML+= "<div id='eqsPag' style='display:none'>\
-					<h4> Equações </h4> <br>\
-					\\( delta \\) \
-					</div>";
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-text.innerHTML+= "<div id='grfPag' style='display:none'>\
-					<h4> Diferentes posições do sol ao meio dia </h4> <br>\
 					</div>";
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
